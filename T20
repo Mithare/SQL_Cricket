@@ -1,0 +1,35 @@
+drop table match_score;
+create table match_score
+(
+	balls	int,
+	runs	int
+);
+
+-- Formula for range between 2 numbers. Here we need between 1 & 6. 1 being low number and 6 begin the high number.
+-- ROUND(RANDOM()*(high_no - low_no + 1)) + low_no;
+
+INSERT INTO match_score
+SELECT generate_series, round(random()*(6-1))+1 
+FROM generate_series(1,120);
+
+SELECT RUNS,COUNT(1) FROM match_score GROUP BY RUNS;
+
+UPDATE match_score
+SET RUNS = round(random()*(2-1))+1
+WHERE RUNS = 5;
+
+SELECT sum(runs) FROM match_score ;
+SELECT * FROM match_score ORDER BY Balls;
+
+
+--Find the total runs scored in each over. Each over has 6 balls and the record are given in serial order by balls.
+
+with cte as (
+select *, ntile(20) over(order by balls) as overs
+from match_score
+)
+
+select overs, sum(runs) as runs
+from cte
+group by 1
+order by 1;
